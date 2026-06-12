@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engagement Invitation</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                        cursive: ['"Great Vibes"', 'cursive'],
+                        sans: ['"Outfit"', 'sans-serif'],
+                    },
+                    colors: {
+                        blush: '#FDFBF7', /* Soft cream/blush */
+                        rose: '#FFE4E1',
+                        burgundy: '#6B0015',
+                        gold: '#D4AF37',
+                        rosegold: '#B76E79',
+                        
+                        /* New Elegant Envelope Colors (Dusty Rose/Nude) */
+                        envLeftRight: '#EAD4D0',
+                        envBottom: '#E3C9C4',
+                        envTop: '#DDBAB3',
+                        envInside: '#CFA69E',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+                        'spin-slow': 'spin 4s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '.6' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #FDFBF7;
+            color: #6B0015;
+            overflow: hidden;
+        }
+        body.scrollable {
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .will-change-transform {
+            will-change: transform, opacity;
+        }
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+
+        /* Scroll Reveal Base */
+        .reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur {
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
+            will-change: transform, opacity, filter;
+        }
+        
+        .reveal { transform: translateY(40px); }
+        .reveal-left { transform: translateX(50px); }
+        .reveal-right { transform: translateX(-50px); }
+        .reveal-scale { transform: scale(0.8); }
+        .reveal-blur { filter: blur(10px); transform: translateY(20px); }
+
+        .reveal.active, .reveal-left.active, .reveal-right.active, .reveal-scale.active, .reveal-blur.active {
+            opacity: 1;
+            transform: translate(0) scale(1);
+            filter: blur(0);
+        }
+        
+        /* Stagger Delays */
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+        .delay-400 { transition-delay: 400ms; }
+
+        .marquee-track { display: flex; width: max-content; }
+        .marquee-track:hover { animation-play-state: paused; }
+        .marquee-track.left { animation: scroll-left 40s linear infinite; }
+        @keyframes scroll-left { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        .gallery-item {
+            position: relative;
+            flex-shrink: 0;
+            height: 300px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(107, 0, 21, 0.1);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+        .gallery-item:hover img { transform: scale(1.05); }
+
+        @keyframes slide-in-left {
+            0% { transform: translateX(-100px); opacity: 0; }
+            40% { transform: translateX(-25px); opacity: 1; }
+            70% { transform: translateX(0px); opacity: 1; }
+            100% { transform: translateX(12px); opacity: 1; }
+        }
+        @keyframes slide-in-right {
+            0% { transform: translateX(100px); opacity: 0; }
+            40% { transform: translateX(25px); opacity: 1; }
+            70% { transform: translateX(0px); opacity: 1; }
+            100% { transform: translateX(-12px); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="antialiased font-sans overflow-hidden">
+
+    <!-- PRELOADER -->
+    <div id="preloader" class="fixed inset-0 z-[200] bg-[#FAF7F2] flex flex-col items-center justify-center transition-opacity duration-1000">
+        <div class="relative w-40 h-24 flex items-center justify-center">
+            <div id="ring-left" class="absolute w-16 h-16 md:w-20 md:h-20 rounded-full border-[6px] border-[#DDBAB3] shadow-sm z-0" style="animation: slide-in-left 2s ease-out forwards;"></div>
+            <div id="ring-right" class="absolute w-16 h-16 md:w-20 md:h-20 rounded-full border-[6px] border-rosegold shadow-lg z-10" style="animation: slide-in-right 2s ease-out forwards;"></div>
+        </div>
+        <p class="font-serif text-burgundy tracking-[0.3em] uppercase text-xs mt-8 animate-pulse">Loading Forever...</p>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="fixed inset-0 z-[100] bg-black/90 hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+        <button id="lightbox-close" class="absolute top-6 right-8 text-white text-4xl hover:text-rosegold transition-colors">&times;</button>
+        <img id="lightbox-img" src="" alt="Enlarged Memory" class="max-w-[90%] max-h-[90%] object-contain rounded shadow-2xl scale-95 transition-transform duration-300">
+    </div>
+
+    <!-- Background Music -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="Javed Ali Jashn-E-Bahaaraa (Audio Lyrical) A (mp3cut.net).mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Floating Audio Control (Vinyl CD) -->
+    <button id="music-toggle" class="fixed right-6 bottom-6 z-50 w-14 h-14 rounded-full shadow-[0_4px_15px_rgba(107,0,21,0.2)] transition-transform hover:scale-110 opacity-0 pointer-events-none duration-1000 group">
+        
+        <!-- Spinning CD -->
+        <div id="music-cd" class="w-full h-full rounded-full border-2 border-rosegold bg-gray-900 overflow-hidden relative animate-spin-slow" style="animation-play-state: paused;">
+            <!-- Vinyl Grooves -->
+            <div class="absolute inset-0 rounded-full border border-gray-700 m-1"></div>
+            <div class="absolute inset-0 rounded-full border border-gray-700 m-2"></div>
+            <div class="absolute inset-0 rounded-full border border-gray-700 m-[10px]"></div>
+            <!-- Center Label -->
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-5 h-5 bg-rosegold rounded-full z-10 flex items-center justify-center shadow-inner">
+                    <div class="w-1.5 h-1.5 bg-black rounded-full"></div>
+                </div>
+            </div>
+            <!-- Light reflection -->
+            <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent"></div>
+        </div>
+        
+        <!-- Hover indicator for play/pause -->
+        <div class="absolute inset-0 bg-black/60 z-20 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <i id="music-icon" class="fas fa-play text-white text-sm"></i>
+        </div>
+    </button>
+
+    <!-- 1. ENVELOPE INTRO SCREEN -->
+    <div id="intro-container" class="fixed inset-0 flex flex-col items-center justify-center z-50 bg-blush transition-opacity duration-700">
+        
+        <div id="intro-text" class="relative z-10 text-center mb-24 transition-opacity duration-500">
+            <h1 class="font-serif text-3xl md:text-4xl text-burgundy tracking-[0.2em] uppercase mb-2">
+                You're Invited
+            </h1>
+            <p class="font-cursive text-4xl md:text-5xl text-rosegold">To our engagement</p>
+        </div>
+
+        <!-- The CSS Envelope (Elegant Muted Colors) -->
+        <div id="envelope-wrapper" class="relative w-[340px] h-[220px] mx-auto cursor-pointer group perspective-1000 hover:scale-105 transition-transform duration-500 z-20">
+            
+            <!-- Envelope Back (Inside Pocket) -->
+            <div class="absolute inset-0 bg-envInside rounded-sm shadow-xl z-0 overflow-hidden border border-gray-200/50">
+                <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+            </div>
+
+            <!-- The Invitation Card -->
+            <div id="invite-card" class="absolute left-3 right-3 bottom-3 h-[190px] bg-[#FEFCF8] rounded-sm shadow-md flex flex-col items-center justify-center p-3 text-center transition-transform duration-[800ms] ease-in-out z-10 will-change-transform border border-gray-100">
+                <!-- Inner Card Border -->
+                <div class="border border-gold/60 w-full h-full flex flex-col items-center justify-center rounded-sm bg-white">
+                    <i class="fas fa-envelope-open-text text-rosegold text-2xl mb-3"></i>
+                    <h2 class="font-cursive text-4xl text-burgundy mb-2">Lavesh & Tanushree</h2>
+                    <p class="font-serif text-[10px] tracking-[0.3em] text-gray-500 uppercase">You're Invited</p>
+                </div>
+            </div>
+
+            <!-- Envelope Front Flaps (Elegant Nude/Dusty Rose) -->
+            <div class="absolute inset-0 z-20 pointer-events-none drop-shadow-md">
+                <svg viewBox="0 0 340 220" class="w-full h-full" preserveAspectRatio="none">
+                    <!-- Left flap -->
+                    <path d="M0,0 L170,120 L0,220 Z" fill="#EAD4D0" stroke="#EAD4D0" stroke-width="1"/>
+                    <!-- Right flap -->
+                    <path d="M340,0 L170,120 L340,220 Z" fill="#EAD4D0" stroke="#EAD4D0" stroke-width="1"/>
+                    <!-- Bottom flap -->
+                    <path d="M0,220 L170,120 L340,220 Z" fill="#E3C9C4" stroke="#E3C9C4" stroke-width="1"/>
+                </svg>
+            </div>
+
+            <!-- Envelope Top Flap -->
+            <div id="envelope-flap" class="absolute top-0 left-0 w-full h-[120px] z-30 origin-top transition-all duration-[600ms] transform-style-3d pointer-events-none drop-shadow-xl">
+                <svg viewBox="0 0 340 120" class="w-full h-full" preserveAspectRatio="none">
+                    <path d="M0,0 L170,120 L340,0 Z" fill="#DDBAB3" stroke="#DDBAB3" stroke-width="1"/>
+                </svg>
+            </div>
+
+            <!-- Wax Seal -->
+            <div id="wax-seal" class="absolute top-[110px] left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 bg-burgundy rounded-full z-40 flex items-center justify-center shadow-lg border-2 border-white/20 transition-all duration-500">
+                <span class="font-cursive text-white text-xl">L&T</span>
+            </div>
+
+        </div>
+        
+        <p id="tap-text" class="text-burgundy font-sans text-xs uppercase tracking-[0.3em] mt-24 animate-pulse-glow transition-opacity duration-300">
+            Tap the seal to open
+        </p>
+    </div>
+
+    <!-- MAIN SCROLLABLE CONTENT -->
+    <main id="main-content" class="w-full h-0 opacity-0 pointer-events-none transition-opacity duration-[800ms] overflow-hidden will-change-transform bg-blush">
+
+        <!-- 2. BRIGHT & ELEGANT HERO SECTION -->
+        <section class="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
+            <!-- Romantic Background Image (Two Rings) -->
+            <div class="absolute inset-0 bg-[url('https://images.pexels.com/photos/1456613/pexels-photo-1456613.jpeg?auto=compress&cs=tinysrgb&w=1920')] bg-cover bg-center"></div>
+            <!-- Soft Blush Gradient Overlay for Readability -->
+            <div class="absolute inset-0 bg-white/70 backdrop-blur-[2px]"></div>
+            
+            <div class="relative z-10 text-center px-6 animate-float mt-16">
+                <div class="flex items-center justify-center gap-4 mb-8">
+                    <div class="h-px bg-rosegold w-12 md:w-24"></div>
+                    <p class="font-sans text-xs md:text-sm tracking-[0.4em] uppercase text-burgundy font-medium drop-shadow-sm">We are getting engaged</p>
+                    <div class="h-px bg-rosegold w-12 md:w-24"></div>
+                </div>
+                
+                <h2 class="font-cursive text-7xl md:text-9xl text-burgundy drop-shadow-md mb-8 leading-tight">
+                    Lavesh & Tanushree
+                </h2>
+                
+                <p class="font-serif text-xl md:text-2xl text-burgundy italic tracking-wide font-light max-w-2xl mx-auto drop-shadow-sm">
+                    Two hearts, one beautiful journey ahead.
+                </p>
+            </div>
+            
+            <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+                <p class="text-burgundy font-sans text-[10px] uppercase tracking-[0.3em] mb-4">Scroll Down</p>
+                <div class="w-px h-16 bg-gradient-to-b from-burgundy to-transparent animate-bounce"></div>
+            </div>
+        </section>
+
+        <!-- 3. THE COUPLE (Bride & Groom) -->
+        <section class="py-32 bg-white relative reveal shadow-lg z-20">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="font-serif text-4xl md:text-5xl text-burgundy mb-6">The Happy Couple</h2>
+                    <div class="w-24 h-px bg-rosegold mx-auto"></div>
+                </div>
+
+                <div class="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-20">
+                    <!-- Bride Profile -->
+                    <div class="flex flex-col items-center text-center w-full md:w-1/3 reveal-right delay-100">
+                        <div class="w-64 h-64 md:w-72 md:h-72 rounded-t-full rounded-b-xl overflow-hidden mb-8 shadow-xl border-4 border-rose transform transition-transform hover:scale-105 duration-500">
+                            <!-- Beautiful portrait placeholder -->
+                            <img src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Sarah" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-cursive text-4xl text-burgundy mb-3">Tanushree Saraf</h3>
+                        <p class="font-sans text-pink-800 text-sm tracking-wide leading-relaxed px-4">
+                            A lover of art, sunsets, and coffee. She said yes to a lifetime of adventures, endless love, and beautiful moments.
+                        </p>
+                    </div>
+
+                    <!-- Ampersand -->
+                    <div class="flex items-center justify-center mt-4 md:mt-0 reveal-scale delay-200">
+                        <h2 class="font-cursive text-7xl md:text-9xl text-rosegold opacity-40">&</h2>
+                    </div>
+
+                    <!-- Groom Profile -->
+                    <div class="flex flex-col items-center text-center w-full md:w-1/3 reveal-left delay-300">
+                        <div class="w-64 h-64 md:w-72 md:h-72 rounded-t-full rounded-b-xl overflow-hidden mb-8 shadow-xl border-4 border-rose transform transition-transform hover:scale-105 duration-500">
+                            <!-- Beautiful portrait placeholder -->
+                            <img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=800" alt="James" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="font-cursive text-4xl text-burgundy mb-3">Lavesh Saraf</h3>
+                        <p class="font-sans text-pink-800 text-sm tracking-wide leading-relaxed px-4">
+                            An adventurer, a dreamer, and the luckiest man alive. He can't wait to begin forever with his soulmate and best friend.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. COUNTDOWN -->
+        <section id="countdown-section" class="py-32 px-6 text-center bg-[#FAF7F2] relative reveal shadow-md z-10">
+            <div class="max-w-5xl mx-auto">
+                <i class="fas fa-heart text-2xl text-rosegold mb-6"></i>
+                <h2 class="font-serif text-4xl md:text-5xl text-burgundy mb-6">The Celebration Begins In</h2>
+                <div class="w-24 h-px bg-rosegold mx-auto mb-16"></div>
+
+                <div id="countdown" class="flex justify-center items-center gap-4 md:gap-16">
+                    <div class="flex flex-col items-center reveal-up delay-100">
+                        <div id="days" class="font-serif text-5xl md:text-7xl text-burgundy font-light">00</div>
+                        <div class="font-sans text-[10px] md:text-xs uppercase tracking-[0.3em] text-pink-700 mt-4">Days</div>
+                    </div>
+                    <div class="font-serif text-4xl md:text-6xl text-pink-300 font-light reveal-scale delay-200">:</div>
+                    <div class="flex flex-col items-center reveal-up delay-200">
+                        <div id="hours" class="font-serif text-5xl md:text-7xl text-burgundy font-light">00</div>
+                        <div class="font-sans text-[10px] md:text-xs uppercase tracking-[0.3em] text-pink-700 mt-4">Hours</div>
+                    </div>
+                    <div class="font-serif text-4xl md:text-6xl text-pink-300 font-light reveal-scale delay-300">:</div>
+                    <div class="flex flex-col items-center reveal-up delay-300">
+                        <div id="mins" class="font-serif text-5xl md:text-7xl text-burgundy font-light">00</div>
+                        <div class="font-sans text-[10px] md:text-xs uppercase tracking-[0.3em] text-pink-700 mt-4">Minutes</div>
+                    </div>
+                    <div class="font-serif text-4xl md:text-6xl text-pink-300 font-light reveal-scale delay-400">:</div>
+                    <div class="flex flex-col items-center reveal-up delay-400">
+                        <div id="secs" class="font-serif text-5xl md:text-7xl text-burgundy font-light">00</div>
+                        <div class="font-sans text-[10px] md:text-xs uppercase tracking-[0.3em] text-pink-700 mt-4">Seconds</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. FORMAL INVITATION CARD -->
+        <section class="py-32 bg-white relative flex justify-center px-4 md:px-8">
+            <div class="relative w-full max-w-3xl bg-[#FDFBF7] shadow-2xl p-8 md:p-16 border-[12px] border-double border-[#DDBAB3] reveal-scale">
+                
+                <!-- Floral Corners (using Elegant Icons) -->
+                <i class="fas fa-leaf absolute top-6 left-6 text-3xl text-rosegold/30 transform -rotate-45"></i>
+                <i class="fas fa-leaf absolute top-6 right-6 text-3xl text-rosegold/30 transform rotate-45 scale-x-[-1]"></i>
+                <i class="fas fa-leaf absolute bottom-6 left-6 text-3xl text-rosegold/30 transform -rotate-135 scale-y-[-1]"></i>
+                <i class="fas fa-leaf absolute bottom-6 right-6 text-3xl text-rosegold/30 transform rotate-135 scale-[-1]"></i>
+
+                <!-- Interlocking Rings -->
+                <div class="flex justify-center items-center mb-10 mt-6 reveal-up delay-100">
+                    <div class="relative w-28 h-16">
+                        <div class="absolute left-2 top-0 w-16 h-16 rounded-full border-[6px] border-[#DDBAB3] shadow-md z-0"></div>
+                        <div class="absolute right-2 top-0 w-16 h-16 rounded-full border-[6px] border-rosegold shadow-lg z-10"></div>
+                    </div>
+                </div>
+                
+                <!-- Text Content -->
+                <div class="text-center reveal-up delay-200">
+                    <p class="font-serif text-lg md:text-xl text-burgundy mb-4 tracking-wide">Join us for the</p>
+                    <h2 class="font-cursive text-5xl md:text-6xl text-burgundy mb-6 drop-shadow-sm">Engagement Ceremony</h2>
+                    <div class="flex items-center justify-center gap-4 mb-6">
+                        <div class="h-px bg-rosegold w-16"></div>
+                        <p class="font-serif text-sm uppercase tracking-widest text-rosegold">of</p>
+                        <div class="h-px bg-rosegold w-16"></div>
+                    </div>
+                    <h3 class="font-cursive text-6xl md:text-8xl text-burgundy mb-12">Lavesh & Tanushree</h3>
+                    
+                    <p class="font-serif text-xl md:text-2xl text-burgundy mb-2">18 | June | 2026</p>
+                    <p class="font-sans text-pink-800 text-sm tracking-widest uppercase mb-6">at 6:30 pm</p>
+                    
+                    <div class="flex justify-center gap-2 mb-6 text-rosegold">
+                        <div class="w-1.5 h-1.5 rounded-full bg-rosegold"></div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-rosegold"></div>
+                    </div>
+                    
+                    <p class="font-serif text-lg text-burgundy mb-2">at</p>
+                    <h4 class="font-serif text-2xl md:text-3xl text-burgundy mb-2">The Rosewood Manor</h4>
+                    <p class="font-sans text-pink-800 text-sm tracking-wide mb-8">Beverly Hills, CA 90210</p>
+                    
+                    <a href="https://maps.google.com" target="_blank" class="inline-block bg-burgundy text-white hover:bg-pink-900 transition-colors duration-300 font-sans uppercase tracking-[0.2em] text-[10px] py-3 px-8 rounded-full shadow-md mb-10">
+                        Open in Maps
+                    </a>
+
+                    <p class="font-serif text-lg md:text-xl text-burgundy italic">Invited By - Saraf Family</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. EVENTS TIMELINE -->
+        <section class="py-32 bg-[#FAF7F2] relative reveal">
+            <div class="max-w-4xl mx-auto px-6 text-center mb-16">
+                <h2 class="font-serif text-4xl md:text-5xl text-burgundy mb-6">Festivities</h2>
+                <div class="w-24 h-px bg-rosegold mx-auto"></div>
+            </div>
+
+            <div class="max-w-4xl mx-auto px-6 relative">
+                <div class="absolute left-[38px] md:left-1/2 top-0 bottom-0 w-px bg-rose transform md:-translate-x-1/2"></div>
+
+                <div class="relative flex flex-col md:flex-row items-center justify-between mb-16 group reveal-left delay-100">
+                    <div class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-14 h-14 bg-white rounded-full border-2 border-rosegold shadow-md flex items-center justify-center z-10 transition-transform group-hover:scale-110">
+                        <i class="fas fa-glass-cheers text-rosegold"></i>
+                    </div>
+                    
+                    <div class="w-full pl-24 md:pl-0 md:w-[45%] md:text-right pr-6">
+                        <h3 class="font-serif text-3xl text-burgundy mb-2">Guest Arrival</h3>
+                        <p class="font-sans text-rosegold text-sm font-semibold tracking-widest uppercase mb-3">6:30 PM</p>
+                        <p class="font-sans text-pink-900 text-sm leading-relaxed">Please arrive to be welcomed with warmth and joy as we kick off the celebrations with our closest family and friends.</p>
+                    </div>
+                    <div class="hidden md:block md:w-[45%]"></div>
+                </div>
+
+                <div class="relative flex flex-col md:flex-row-reverse items-center justify-between mb-16 group reveal-right delay-200">
+                    <div class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-14 h-14 bg-burgundy rounded-full border-2 border-burgundy shadow-md flex items-center justify-center z-10 transition-transform group-hover:scale-110">
+                        <i class="fas fa-ring text-white"></i>
+                    </div>
+                    
+                    <div class="w-full pl-24 md:pl-0 md:w-[45%] md:text-left pl-6">
+                        <h3 class="font-serif text-3xl text-burgundy mb-2">Ring Ceremony</h3>
+                        <p class="font-sans text-rosegold text-sm font-semibold tracking-widest uppercase mb-3">7:30 PM</p>
+                        <p class="font-sans text-pink-900 text-sm leading-relaxed">The magical moment where we exchange our rings and officially announce our engagement.</p>
+                    </div>
+                    <div class="hidden md:block md:w-[45%]"></div>
+                </div>
+
+                <div class="relative flex flex-col md:flex-row items-center justify-between group reveal-left delay-300">
+                    <div class="absolute left-6 md:left-1/2 transform -translate-x-1/2 w-14 h-14 bg-white rounded-full border-2 border-rosegold shadow-md flex items-center justify-center z-10 transition-transform group-hover:scale-110">
+                        <i class="fas fa-utensils text-rosegold"></i>
+                    </div>
+                    
+                    <div class="w-full pl-24 md:pl-0 md:w-[45%] md:text-right pr-6">
+                        <h3 class="font-serif text-3xl text-burgundy mb-2">Dinner</h3>
+                        <p class="font-sans text-rosegold text-sm font-semibold tracking-widest uppercase mb-3">8:30 PM Onwards</p>
+                        <p class="font-sans text-pink-900 text-sm leading-relaxed">Join us for a lavish dinner and dessert to celebrate the newly engaged couple.</p>
+                    </div>
+                    <div class="hidden md:block md:w-[45%]"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. PHOTO GALLERY -->
+        <section class="py-24 bg-white overflow-hidden reveal">
+            <div class="text-center mb-16 px-6">
+                <h2 class="font-serif text-4xl md:text-5xl text-burgundy mb-6">Our Memories</h2>
+                <div class="w-24 h-px bg-rosegold mx-auto"></div>
+            </div>
+
+            <div class="w-full">
+                <div class="marquee-track left">
+                    <div class="flex gap-[20px] pr-[20px]">
+                        <div class="gallery-item w-[300px] md:w-[400px]">
+                            <img src="https://images.pexels.com/photos/1045541/pexels-photo-1045541.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Memory">
+                        </div>
+                        <div class="gallery-item w-[400px] md:w-[500px]">
+                            <img src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Memory">
+                        </div>
+                        <div class="gallery-item w-[350px] md:w-[450px]">
+                            <img src="https://images.pexels.com/photos/1305095/pexels-photo-1305095.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Memory">
+                        </div>
+                        <div class="gallery-item w-[300px] md:w-[400px]">
+                            <img src="https://images.pexels.com/photos/1045541/pexels-photo-1045541.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Memory">
+                        </div>
+                    </div>
+                    <!-- Duplicated for flawless infinite scroll loop -->
+                    <div class="flex gap-[20px] pr-[20px]">
+                        <div class="gallery-item w-[300px] md:w-[400px]">
+                            <img src="https://images.pexels.com/photos/1045541/pexels-photo-1045541.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Memory">
+                        </div>
+                        <div class="gallery-item w-[400px] md:w-[500px]">
+                            <img src="https://images.pexels.com/photos/2253870/pexels-photo-2253870.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Memory">
+                        </div>
+                        <div class="gallery-item w-[350px] md:w-[450px]">
+                            <img src="https://images.pexels.com/photos/1305095/pexels-photo-1305095.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Memory">
+                        </div>
+                        <div class="gallery-item w-[300px] md:w-[400px]">
+                            <img src="https://images.pexels.com/photos/1045541/pexels-photo-1045541.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Memory">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RSVP & Footer -->
+        <section class="py-24 bg-[#FDFBF7] text-center px-6 relative shadow-inner">
+            <div class="reveal-blur">
+                <i class="fas fa-envelope-open-text text-3xl text-rosegold mb-6"></i>
+                <h2 class="font-serif text-4xl text-burgundy mb-6">With Love</h2>
+                <h3 class="font-cursive text-5xl text-rosegold mb-8">Saraf Family</h3>
+                <p class="font-sans text-pink-800 tracking-wide text-lg mb-4">Your blessings and presence will make this occasion truly memorable.</p>
+                <div class="w-24 h-px bg-rosegold mx-auto mb-8"></div>
+                <p class="font-serif text-xl text-burgundy tracking-widest uppercase">RSVP</p>
+                <p class="font-sans text-pink-900 text-lg mt-2">+91 98765 43210</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-[#FAF7F2] text-center py-16">
+            <h2 class="font-cursive text-5xl text-burgundy mb-4">Lavesh & Tanushree</h2>
+            <p class="font-sans text-xs uppercase tracking-[0.4em] text-rosegold">Forever begins here</p>
+        </footer>
+
+    </main>
+
+    <!-- INTERACTIVE LOGIC -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Preloader Logic
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => {
+                preloader.style.opacity = '0';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                }, 1000);
+            }, 2500);
+
+            const envelopeWrapper = document.getElementById('envelope-wrapper');
+            const flap = document.getElementById('envelope-flap');
+            const seal = document.getElementById('wax-seal');
+            const card = document.getElementById('invite-card');
+            const tapText = document.getElementById('tap-text');
+            const introText = document.getElementById('intro-text');
+            const introContainer = document.getElementById('intro-container');
+            const mainContent = document.getElementById('main-content');
+            
+            // Audio
+            const bgMusic = document.getElementById('bg-music');
+            const musicToggle = document.getElementById('music-toggle');
+            const musicIcon = document.getElementById('music-icon');
+            const musicCd = document.getElementById('music-cd');
+            let isMusicPlaying = false;
+
+            function toggleMusic() {
+                if (isMusicPlaying) {
+                    bgMusic.pause();
+                    musicIcon.classList.remove('fa-pause');
+                    musicIcon.classList.add('fa-play');
+                    musicCd.style.animationPlayState = 'paused';
+                } else {
+                    bgMusic.play().catch(e => console.log('Audio error:', e));
+                    musicIcon.classList.remove('fa-play');
+                    musicIcon.classList.add('fa-pause');
+                    musicCd.style.animationPlayState = 'running';
+                }
+                isMusicPlaying = !isMusicPlaying;
+            }
+
+            musicToggle.addEventListener('click', toggleMusic);
+
+            let animated = false;
+
+            envelopeWrapper.addEventListener('click', () => {
+                if (animated) return;
+                animated = true;
+
+                // Start Music
+                toggleMusic();
+                musicToggle.style.opacity = '1';
+                musicToggle.style.pointerEvents = 'auto';
+                
+                // Hide texts so the card has perfect visual focus
+                tapText.style.opacity = '0';
+                introText.style.opacity = '0';
+                
+                // 1. Break seal
+                seal.style.opacity = '0';
+                seal.style.transform = 'translate(-50%, -50%) scale(1.5)';
+
+                // 2. Open flap
+                flap.style.transform = 'rotateX(180deg)';
+
+                // 3. Ensure flap drops behind card halfway through opening
+                setTimeout(() => {
+                    flap.style.zIndex = '5';
+                }, 300);
+
+                // 4. Pull the card out gracefully
+                setTimeout(() => {
+                    card.style.transform = 'translateY(-200px)';
+                }, 400);
+
+                // 5. Pause to let the user read the beautiful card, then fade out the intro entirely
+                setTimeout(() => {
+                    introContainer.style.opacity = '0';
+                }, 1800);
+
+                // 6. Fade in the main website and enable scrolling
+                setTimeout(() => {
+                    mainContent.style.height = 'auto';
+                    mainContent.style.opacity = '1';
+                    mainContent.style.pointerEvents = 'auto';
+                    document.body.classList.add('scrollable');
+                    
+                    setTimeout(() => {
+                        introContainer.style.display = 'none';
+                    }, 700);
+                }, 2200);
+            });
+
+            // Confetti Observer for Countdown
+            const countdownSection = document.getElementById('countdown-section');
+            if (countdownSection) {
+                const confettiObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            var duration = 3 * 1000;
+                            var end = Date.now() + duration;
+                            (function frame() {
+                                confetti({
+                                    particleCount: 5,
+                                    angle: 60,
+                                    spread: 55,
+                                    origin: { x: 0 },
+                                    colors: ['#DDBAB3', '#6B0015', '#FFC0CB', '#FFD700']
+                                });
+                                confetti({
+                                    particleCount: 5,
+                                    angle: 120,
+                                    spread: 55,
+                                    origin: { x: 1 },
+                                    colors: ['#DDBAB3', '#6B0015', '#FFC0CB', '#FFD700']
+                                });
+                                if (Date.now() < end) {
+                                    requestAnimationFrame(frame);
+                                }
+                            }());
+                            confettiObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.5 });
+                confettiObserver.observe(countdownSection);
+            }
+
+            // Scroll Reveal Observer
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target); 
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-blur, .reveal-up').forEach(el => observer.observe(el));
+
+            // Countdown Logic
+            const eventDate = new Date('June 18, 2026 18:30:00');
+
+            setInterval(() => {
+                const now = new Date().getTime();
+                const distance = eventDate.getTime() - now;
+                
+                if (distance < 0) return;
+                
+                document.getElementById('days').innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+                document.getElementById('hours').innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+                document.getElementById('mins').innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                document.getElementById('secs').innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+            }, 1000);
+
+            // Lightbox Logic
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxClose = document.getElementById('lightbox-close');
+
+            document.querySelectorAll('.gallery-item img').forEach(img => {
+                img.style.cursor = 'pointer';
+                img.addEventListener('click', () => {
+                    lightboxImg.src = img.src;
+                    lightbox.classList.remove('hidden');
+                    // Force reflow
+                    void lightbox.offsetWidth;
+                    lightbox.classList.remove('opacity-0');
+                    lightboxImg.classList.remove('scale-95');
+                    lightboxImg.classList.add('scale-100');
+                });
+            });
+
+            function closeLightbox() {
+                lightbox.classList.add('opacity-0');
+                lightboxImg.classList.remove('scale-100');
+                lightboxImg.classList.add('scale-95');
+                setTimeout(() => {
+                    lightbox.classList.add('hidden');
+                }, 300);
+            }
+
+            lightboxClose.addEventListener('click', closeLightbox);
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) closeLightbox();
+            });
+        });
+    </script>
+</body>
+</html>
